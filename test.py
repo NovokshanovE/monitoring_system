@@ -60,7 +60,7 @@ def verbose_ping(address, count=4, interval=1, timeout=2, id=PID):
     print('\nCompleted.')
 
 
-verbose_ping('1.1.1.1')
+verbose_ping('192.168.1.1')
 
 # PING 1.1.1.1: 56 data bytes
 #
