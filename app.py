@@ -19,20 +19,23 @@ class Device:
             destination=self.address,
             id=self.id,
             sequence=1)
+        
 
         try:
+            hosts = multiping([self.address])
+            print(hosts[0].is_alive)
             # We send the request
-            sock.send(request)
-
+            #sock.send(request)
+            #print(ping(self.address))
             # We are awaiting receipt of an ICMP reply
-            reply = sock.receive(request, self.timeout)
+            #reply = sock.receive(request, self.timeout)
 
             # We received a reply
             # We display some information
-            print('ping')
+            #print('ping')
 
             # We throw an exception if it is an ICMP error message
-            reply.raise_for_status()
+            #reply.raise_for_status()
 
             
 
