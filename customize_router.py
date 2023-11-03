@@ -3,6 +3,7 @@ import netifaces
 
 gws = netifaces.gateways()
 
+
 for key in gws['default']:
     print(gws['default'][key][0])
 print(gws)

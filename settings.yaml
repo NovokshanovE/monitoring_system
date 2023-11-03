@@ -1,0 +1,8 @@
+count: 4
+timeout: 0.1
+interval: 0.1
+mail: zhenya.novokshanov@gmail.com
+number_fail_connection: 5
+path_to_log_file: ./
+devices:
+- { adress: 100, ssh: IT }
