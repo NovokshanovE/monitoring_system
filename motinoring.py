@@ -9,9 +9,11 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from icmplib import *
+import asyncio
 import threading
 from multiprocessing import Process, Pipe, Queue
 #import asyncssh
+import aioconsole
 
 running = True
 
@@ -32,6 +34,26 @@ class DeviceMonitor:
         self.logger = None  # Создаем объект для записи логов
         self.load_config(config_file)
         self.run = True  # Метод для загрузки конфигурации из YAML файла
+        self.pause_event = asyncio.Event()
+        self.paused = False
+
+    async def monitor_devices(self):
+        while True:
+            if not self.paused:
+                # Выполняйте мониторинг сетевых устройств
+                print("Мониторинг запущен...")
+                self.run = True
+                await self.start_monitoring()  # Здесь можно заменить на вашу логику мониторинга
+            else:
+                print("Мониторинг на паузе...")
+                self.run = False
+
+    def pause_monitoring(self):
+        self.paused = True
+
+    def resume_monitoring(self):
+        self.paused = False
+        self.pause_event.set()
 
     def load_config(self, config_file):
         try:
@@ -62,31 +84,26 @@ class DeviceMonitor:
         for device in self.devices:
             device.connect()
             device.setup_ping()
-        while True:
+        
             # global running
             # self.run = running
-            if(main_queue.get() == "Start"):
-                print("Continue monitoring...")
-                self.run = True
-            elif(main_queue.get() == "Stop"):
+            
+        while self.run:
+            
                 
-                self.run = False
-            while self.run:
-                
-                    
-                for device in self.devices:
-                    # device.connect()
-                    # device.setup_ping()
-                    result = device.ping()
-                    self.logger.log(result)
-                    if 'failed' in result:
-                        device.count_fail += 1
-                    if device.count_fail >= device.ping_attempts:
-                        print("TO EMAIL")
-                        device.count_fail = 0
-                        device.notify_admin()
-                        device.disconnect()
-            print("Stop monitoring...")
+            for device in self.devices:
+                # device.connect()
+                # device.setup_ping()
+                result = device.ping()
+                self.logger.log(result)
+                if 'failed' in result:
+                    device.count_fail += 1
+                if device.count_fail >= device.ping_attempts:
+                    print("TO EMAIL")
+                    device.count_fail = 0
+                    device.notify_admin()
+                    device.disconnect()
+        print("Stop monitoring...")
 
 
 
@@ -232,19 +249,19 @@ class NetworkDevice:
 
 
 
-def input_function():
-    while True:
-        data = input(">>")#"Введите данные для отправки в основную функцию: ")
-        if(data == "Stop"):
-                running = False
-                #run_thread.join()
-        elif(data == "Start"):
+# def input_function():
+#     while True:
+#         data = input(">>")#"Введите данные для отправки в основную функцию: ")
+#         if(data == "Stop"):
+#                 running = False
+#                 #run_thread.join()
+#         elif(data == "Start"):
 
-            running = True
-        elif(data == "Kill"):
-            process = multiprocessing.current_process()
-            process.kill()
-        main_queue.put(data)
+#             running = True
+#         elif(data == "Kill"):
+#             process = multiprocessing.current_process()
+#             process.kill()
+#         main_queue.put(data)
 
 
 
@@ -256,7 +273,26 @@ def main():
         monitor = DeviceMonitor(config_file)
         # run_thread = threading.Thread(target=monitor.start_monitoring)
         # run_thread.start()
-        monitor.start_monitoring()
+        async def control_monitoring(monitor):
+            while True:
+                user_input = await aioconsole.ainput("Введите 'pause' для паузы или 'resume' для возобновления мониторинга: ")
+                if user_input == "pause":
+                    monitor.pause_monitoring()
+                elif user_input == "resume":
+                    monitor.resume_monitoring()
+                else:
+                    print("Неверная команда.")
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(asyncio.gather(
+            monitor.monitor_devices(),
+            control_monitoring(monitor)
+        ))
+        loop.close()
+        # asyncio.get_event_loop().run_until_complete(asyncio.gather(
+        #     monitor.monitor_devices(),
+        #     control_monitoring()
+        # ))
+        #monitor.start_monitoring()
         # while True:
             
 
@@ -283,19 +319,19 @@ if __name__ == "__main__":
     
     
 
-    main_queue = queue.Queue()
+    # main_queue = queue.Queue()
 
-    # Создаем и запускаем поток для основной функции
-    main_thread = threading.Thread(target=main)
-    main_thread.start()
+    # # Создаем и запускаем поток для основной функции
+    # main_thread = threading.Thread(target=main)
+    # main_thread.start()
     
-
+    main()
     # Создаем и запускаем поток для считывания данных
-    input_thread = threading.Thread(target=input_function)
-    input_thread.start()
+    # input_thread = threading.Thread(target=input_function)
+    # input_thread.start()
 
-    # Ждем завершения потоков (это можно убрать, чтобы программа работала вечно)
-    main_thread.join()
-    input_thread.join()
+    # # Ждем завершения потоков (это можно убрать, чтобы программа работала вечно)
+    # main_thread.join()
+    # input_thread.join()
     # loop.close()  
     #main(config_file)
