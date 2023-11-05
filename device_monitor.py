@@ -11,7 +11,7 @@ from icmplib import *
 import asyncio
 import threading
 from multiprocessing import Process, Pipe, Queue
-import aioconsole
+import multiprocessing
 from logger import Logger
 from network_device import NetworkDevice
 
@@ -27,23 +27,6 @@ class DeviceMonitor:
         self.pause_event = asyncio.Event()
         self.paused = False
 
-    async def monitor_devices(self):
-        while True:
-            if not self.paused:
-                # Выполняйте мониторинг сетевых устройств
-                print("Мониторинг запущен...")
-                self.run = True
-                await self.start_monitoring()  # Здесь можно заменить на вашу логику мониторинга
-            else:
-                print("Мониторинг на паузе...")
-                self.run = False
-
-    def pause_monitoring(self):
-        self.paused = True
-
-    def resume_monitoring(self):
-        self.paused = False
-        self.pause_event.set()
 
     def load_config(self, config_file):
         try:
@@ -68,29 +51,37 @@ class DeviceMonitor:
         # Реализуйте метод для загрузки конфигурации из YAML файла
         # И создайте объекты NetworkDevice на основе данных из файла
 
-    def start_monitoring(self):
+    def start_monitoring(self, queue):
         print("Start monitoring...")
         # Метод для начала мониторинга устройств
-        for device in self.devices:
-            device.connect()
-            device.setup_ping()
-        
-            # global running
-            # self.run = running
-            
-        while self.run:
-            
-                
+        while True:
             for device in self.devices:
-                # device.connect()
-                # device.setup_ping()
-                result = device.ping()
-                self.logger.log(result)
-                if 'failed' in result:
-                    device.count_fail += 1
-                if device.count_fail >= device.ping_attempts:
-                    print("TO EMAIL")
-                    device.count_fail = 0
-                    device.notify_admin()
-                    device.disconnect()
-        print("Stop monitoring...")
+                device.connect()
+                device.setup_ping()
+            
+                # global running
+                # self.run = running
+            if not queue.empty():
+                user_input = queue.get()   
+                if user_input == 'pause':
+                    self.run = False
+                elif user_input == 'resume':
+                    self.run = True
+                elif user_input == 'kill':
+                    root = multiprocessing.parent_process().kill()
+            while self.run:
+                
+                    
+                for device in self.devices:
+                    # device.connect()
+                    # device.setup_ping()
+                    result = device.ping()
+                    self.logger.log(result)
+                    if 'failed' in result:
+                        device.count_fail += 1
+                    if device.count_fail >= device.ping_attempts:
+                        print("TO EMAIL")
+                        device.count_fail = 0
+                        device.notify_admin()
+                        device.disconnect()
+            print("Stop monitoring...")
