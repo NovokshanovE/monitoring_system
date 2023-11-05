@@ -16,6 +16,8 @@ import aioconsole
 import multiprocessing
 from device_monitor import DeviceMonitor
 
+from logger import Logger
+
 message_queue = queue.Queue()
 
 
