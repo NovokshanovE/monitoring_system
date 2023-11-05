@@ -61,15 +61,20 @@ class DeviceMonitor:
             
                 # global running
                 # self.run = running
-            if not queue.empty():
+            if self.run == False:
+
                 user_input = queue.get()   
                 if user_input == 'pause':
                     self.run = False
                 elif user_input == 'resume':
                     self.run = True
-                elif user_input == 'kill':
-                    root = multiprocessing.parent_process().kill()
             while self.run:
+                if(not queue.empty()):
+                    user_input = queue.get()   
+                    if user_input == 'pause':
+                        self.run = False
+                    elif user_input == 'resume':
+                        self.run = True
                 
                     
                 for device in self.devices:
@@ -80,8 +85,8 @@ class DeviceMonitor:
                     if 'failed' in result:
                         device.count_fail += 1
                     if device.count_fail >= device.ping_attempts:
-                        print("TO EMAIL")
+                        #print("TO EMAIL")
                         device.count_fail = 0
                         device.notify_admin()
                         device.disconnect()
-            print("Stop monitoring...")
+            #print("Stop monitoring...")

@@ -16,12 +16,18 @@ import aioconsole
 import multiprocessing
 from device_monitor import DeviceMonitor
 
+message_queue = queue.Queue()
+
 
 def input_process(queue):
     while True:
         user_input = input()
         queue.put(user_input)
         
+def input_thread():
+    while True:
+        user_input = input("Введите сообщение: ")
+        message_queue.put(user_input)  # Помещаем сообщение в очередь
 
 def main(queue):
     config_file = "settings.yaml"
@@ -51,15 +57,7 @@ def main(queue):
         print(f"Error: {str(e)}")
 
 if __name__ == "__main__":
-    message_queue = Queue()
-    #root_proc = multiprocessing.current_process()
+    input_thread = threading.Thread(target=input_thread)
+    input_thread.start()
     
-    input_proc = Process(target=input_process, args=(message_queue, ))
-    main_proc = Process(target=main, args=(message_queue,))
-
-    input_proc.start()
-    main_proc.start()
-
-    input_proc.join()
-    main_proc.join()
-    main()
+    main(message_queue)
