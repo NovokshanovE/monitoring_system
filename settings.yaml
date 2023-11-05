@@ -1,8 +1,15 @@
-count: 4
-timeout: 0.1
-interval: 0.1
-mail: zhenya.novokshanov@gmail.com
-number_fail_connection: 5
-path_to_log_file: ./
 devices:
-- { adress: 100, ssh: IT }
+  - ip_address: '192.168.1.11'
+    username: root
+    password: '123456'
+    log_file: device_1.log
+    email: zhenya.novokshanov@gmail.com
+    ping_attempts: 3
+  - ip_address: '192.168.1.13'
+    username: root
+    password: '123456'
+    log_file: device_2.log
+    email: zhenya.novokshanov@gmail.com
+    ping_attempts: 2
+log_file: monitoring.log
+email: zhenya.novokshanov@gmail.com
