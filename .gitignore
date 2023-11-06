@@ -1,2 +1,3 @@
 myenv
-monitoring.log
+testenv
+*.log
