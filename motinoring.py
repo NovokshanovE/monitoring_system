@@ -25,11 +25,15 @@ def input_process(queue):
     while True:
         user_input = input()
         queue.put(user_input)
+        if(user_input == 'kill'):
+            exit()
         
 def input_thread():
     while True:
         user_input = input("Введите сообщение: ")
-        message_queue.put(user_input)  # Помещаем сообщение в очередь
+        message_queue.put(user_input) # Помещаем сообщение в очередь
+        if(user_input == 'kill'):
+            exit()  
 
 def main(queue):
     config_file = "settings.yaml"
@@ -63,3 +67,4 @@ if __name__ == "__main__":
     input_thread.start()
     
     main(message_queue)
+    input_thread.join()

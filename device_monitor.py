@@ -50,9 +50,22 @@ class DeviceMonitor:
             print(f"Error loading configuration: {str(e)}")
         # Реализуйте метод для загрузки конфигурации из YAML файла
         # И создайте объекты NetworkDevice на основе данных из файла
+    def device_thread(self, device):
+        result = device.ping()
+        self.logger.log(result)
+        if 'failed' in result:
+            device.count_fail += 1
+        elif 'successful' in result:
+            device.count_fail = 0
+        if device.count_fail == device.ping_attempts:
+            #print("TO EMAIL")
+            device.count_fail = 0
+            device.notify_admin()
+            device.disconnect()
+        return 
 
     def start_monitoring(self, queue):
-        print("Start monitoring...")
+        print("\nStart monitoring...")
         # Метод для начала мониторинга устройств
         while True:
             for device in self.devices:
@@ -75,18 +88,18 @@ class DeviceMonitor:
                         self.run = False
                     elif user_input == 'resume':
                         self.run = True
+                    elif user_input == 'kill':
+                        exit()
                 
-                    
+                threads = []    
                 for device in self.devices:
                     # device.connect()
                     # device.setup_ping()
-                    result = device.ping()
-                    self.logger.log(result)
-                    if 'failed' in result:
-                        device.count_fail += 1
-                    if device.count_fail >= device.ping_attempts:
-                        #print("TO EMAIL")
-                        device.count_fail = 0
-                        device.notify_admin()
-                        device.disconnect()
+                    d_thread = threading.Thread(target=self.device_thread, args=(device, ))
+                    d_thread.start()
+                    threads.append(d_thread)
+                for thread in threads:
+                    thread.join()
+                
+                    
             #print("Stop monitoring...")
