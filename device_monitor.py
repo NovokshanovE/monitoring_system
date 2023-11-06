@@ -65,7 +65,7 @@ class DeviceMonitor:
         return 
 
     def start_monitoring(self, queue):
-        print("\nStart monitoring...")
+        #print("\nStart monitoring...")
         # Метод для начала мониторинга устройств
         while True:
             for device in self.devices:
