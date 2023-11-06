@@ -30,10 +30,14 @@ def input_process(queue):
         
 def input_thread():
     while True:
-        user_input = input("Введите сообщение: ")
+        user_input = input("Список команд: help или ?\nВведите  команду: ")
         message_queue.put(user_input) # Помещаем сообщение в очередь
         if(user_input == 'kill'):
             exit()  
+        elif(user_input == 'help' or user_input == '?'):
+            print("Commands:\n\tpause : система приостанавливает свою работу\
+                  \n\tresume : система возобновляет свою работу\
+                  \n\tkill : система завршает свою работу\n")
 
 def main(queue):
     config_file = "settings.yaml"
