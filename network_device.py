@@ -117,7 +117,7 @@ class NetworkDevice:
         #print('\nCompleted.')
         return True
     def notify_admin(self):
-        print("<<<EMAIL>>>")
+        #print("<<<EMAIL>>>")
         # Метод для отправки уведомления администратору
         subject = f"Device {self.ip_address} is not responding"
         body = "The device is not responding to ICMP ping. Please investigate."
@@ -133,9 +133,9 @@ class NetworkDevice:
         msg.attach(MIMEText(body, 'plain'))
 
         try:
-            print("server_smtp")
+            #print("server_smtp")
             server = smtplib.SMTP('smtp.yandex.ru', 587)  # Используйте свой SMTP-сервер и порт
-            print("server_smtp1__")
+            #print("server_smtp1__")
             server.starttls()
             
             server.login(from_email, 'higvzxioxurztkxd')  # Замените на ваш пароль
