@@ -38,7 +38,7 @@ class NetworkDevice:
             self.ssh_client.connect(self.ip_address, username=self.username, password=self.password)
             return True  # Успешное подключение
         except Exception as e:
-            print(f"Error connecting to {self.ip_address}: {str(e)}")
+            print(f"\nError connecting to {self.ip_address}: {str(e)}\n")
             return False  # Не удалось подключиться
 
     def setup_ping(self):
@@ -63,7 +63,7 @@ class NetworkDevice:
 
             return True  # Успешно настроено
         except Exception as e:
-            print(f"Error setting up ping for {self.ip_address}: {str(e)}")
+            print(f"\nError setting up ping for {self.ip_address}: {str(e)}\n")
             return False  # Не удалось настроить
 
     def ping(self):
@@ -145,7 +145,7 @@ class NetworkDevice:
             server.quit()
             return True  # Уведомление отправлено успешно
         except Exception as e:
-            print(f"Error sending notification: {str(e)}")
+            print(f"\nError sending notification: {str(e)}\n")
             return False  # Не удалось отправить уведомление
 
     def disconnect(self):
@@ -154,6 +154,6 @@ class NetworkDevice:
             self.ssh_client.close()
             return True  # Успешное отключение
         except Exception as e:
-            print(f"Error disconnecting from {self.ip_address}: {str(e)}")
+            print(f"\nError disconnecting from {self.ip_address}: {str(e)}\n")
             return False  # Не удалось отключиться
 

@@ -68,9 +68,29 @@ class DeviceMonitor:
         #print("\nStart monitoring...")
         # Метод для начала мониторинга устройств
         while True:
+            if(not queue.empty()):
+                    user_input = queue.get()   
+                    if user_input == 'pause':
+                        self.run = False
+                    elif user_input == 'resume':
+                        self.run = True
+                    elif user_input == 'kill':
+                        exit()
             for device in self.devices:
-                device.connect()
-                device.setup_ping()
+                res_connection = device.connect()
+                res_setup = device.setup_ping()
+                # if not res_connection or not res_setup:
+                #     self.run = False
+                #     device.count_fail += 1
+                # elif res_connection and res_setup:
+                #     device.count_fail = 0
+                #     self.run = True
+                # if device.count_fail == device.ping_attempts:
+                #     #print("TO EMAIL")
+                #     device.count_fail = 0
+                #     device.notify_admin()
+                #     device.disconnect()
+
             
                 # global running
                 # self.run = running
