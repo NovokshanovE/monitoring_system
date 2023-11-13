@@ -48,8 +48,7 @@ class DeviceMonitor:
 
         except Exception as e:
             print(f"Error loading configuration: {str(e)}")
-        # Реализуйте метод для загрузки конфигурации из YAML файла
-        # И создайте объекты NetworkDevice на основе данных из файла
+       
     def device_thread(self, device):
         result = device.ping()
         self.logger.log(result)
@@ -79,21 +78,7 @@ class DeviceMonitor:
             for device in self.devices:
                 res_connection = device.connect()
                 res_setup = device.setup_ping()
-                # if not res_connection or not res_setup:
-                #     self.run = False
-                #     device.count_fail += 1
-                # elif res_connection and res_setup:
-                #     device.count_fail = 0
-                #     self.run = True
-                # if device.count_fail == device.ping_attempts:
-                #     #print("TO EMAIL")
-                #     device.count_fail = 0
-                #     device.notify_admin()
-                #     device.disconnect()
-
-            
-                # global running
-                # self.run = running
+                
             if self.run == False:
 
                 user_input = queue.get()   

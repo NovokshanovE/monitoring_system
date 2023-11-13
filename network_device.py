@@ -55,7 +55,7 @@ class NetworkDevice:
             ssh_shell.send("end\n")
             ssh_shell.send("write memory\n")  # Сохранение конфигурации
 
-            # Подождите несколько секунд, чтобы убедиться, что команды выполнились успешно
+            
             time.sleep(5)
 
             ssh_shell.close()
@@ -69,7 +69,7 @@ class NetworkDevice:
     def ping(self):
         # Метод для отправки ICMP пингов и возвращения результатов
         result = self.icmp_ping(timeout=1, count=4)
-        #print(result)  # Пингуем устройство 4 раза с таймаутом 1 секунда
+        
         if result:
             return f"Ping to {self.ip_address} successful."
             
@@ -89,14 +89,12 @@ class NetworkDevice:
             try:
                 sock.send(request)
                 reply = sock.receive(request, timeout)
-                #print(f'  {reply.bytes_received} bytes from '
-                #    f'{reply.source}: ', end='')
+                
                 reply.raise_for_status()
 
                 round_trip_time = (reply.time - request.time) * 1000
 
-                # print(f'icmp_seq={sequence} '
-                #     f'time={round(round_trip_time, 3)} ms')
+                
 
                 if sequence < count - 1:
                     time.sleep(interval)
@@ -122,7 +120,7 @@ class NetworkDevice:
         subject = f"Device {self.ip_address} is not responding"
         body = "The device is not responding to ICMP ping. Please investigate."
 
-        from_email = "novokshanov.eugene@yandex.ru"  # Замените на ваш электронный адрес
+        from_email = "novokshanov.eugene@yandex.ru"  
         to_email = self.email
 
         msg = MIMEMultipart()
@@ -134,11 +132,11 @@ class NetworkDevice:
 
         try:
             #print("server_smtp")
-            server = smtplib.SMTP('smtp.yandex.ru', 587)  # Используйте свой SMTP-сервер и порт
+            server = smtplib.SMTP('smtp.yandex.ru', 587)  
             #print("server_smtp1__")
             server.starttls()
             
-            server.login(from_email, 'higvzxioxurztkxd')  # Замените на ваш пароль
+            server.login(from_email, 'higvzxioxurztkxd') 
 
             text = msg.as_string()
             server.sendmail(from_email, to_email, text)

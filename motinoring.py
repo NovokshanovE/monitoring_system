@@ -45,21 +45,7 @@ def main(queue):
 
         monitor = DeviceMonitor(config_file)
 
-        # async def control_monitoring(monitor):
-        #     while True:
-        #         user_input = await aioconsole.ainput("Введите 'pause' для паузы или 'resume' для возобновления мониторинга: ")
-        #         if user_input == "pause":
-        #             monitor.pause_monitoring()
-        #         elif user_input == "resume":
-        #             monitor.resume_monitoring()
-        #         else:
-        #             print("Неверная команда.")
-        # loop = asyncio.get_event_loop()
-        # loop.run_until_complete(asyncio.gather(
-        #     monitor.monitor_devices(),
-        #     control_monitoring(monitor)
-        # ))
-        # loop.close()
+        
         monitor.start_monitoring(queue)
 
 
